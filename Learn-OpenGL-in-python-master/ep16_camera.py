@@ -34,10 +34,7 @@ def mouse_look_clb(window, xpos, ypos):
 def mouse_enter_clb(window, entered):
     global first_mouse
 
-    if entered:
-        first_mouse = False
-    else:
-        first_mouse = True
+    first_mouse = not entered
 
 
 

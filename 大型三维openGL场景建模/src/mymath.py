@@ -27,9 +27,9 @@ class Vec3:
 
     def __repr__(self) -> str:
         if __name__ == '__main__':
-            return "Vec3({}, {}, {})".format(self.x, self.y, self.z)
+            return f"Vec3({self.x}, {self.y}, {self.z})"
         else:
-            return "{}.Vec3({}, {}, {})".format(__name__, self.x, self.y, self.z)
+            return f"{__name__}.Vec3({self.x}, {self.y}, {self.z})"
 
     def __add__(self, other:"Vec3") -> "Vec3":
         xSum_f = self.x + other.x
@@ -101,9 +101,9 @@ class Vec4(Vec3):
 
     def __repr__(self) -> str:
         if __name__ == '__main__':
-            return "Vec4({}, {}, {}, {})".format(self.x, self.y, self.z, self.w)
+            return f"Vec4({self.x}, {self.y}, {self.z}, {self.w})"
         else:
-            return "{}.Vec4({}, {}, {}, {})".format(__name__, self.x, self.y, self.z, self.w)
+            return f"{__name__}.Vec4({self.x}, {self.y}, {self.z}, {self.w})"
 
     def __add__(self, other:"Vec4") -> "Vec4":
         xSum_f = self.x + other.x
@@ -124,7 +124,7 @@ class Vec4(Vec3):
         return Vec4(xSub_f, ySub_f, zSub_f, wSub_f)
 
     def __mul__(self, other:float) -> "Vec4":
-        other = float(other)
+        other = other
         xNew_f = self.x * other
         yNew_f = self.y * other
         zNew_f = self.z * other
@@ -210,7 +210,7 @@ def getMoveVector3(lookHorAngle:"Angle", lookVerAngle:"Angle"):
 
 class Angle:
     def __init__(self, degree_f:float):
-        self.__degree_f = float(degree_f)
+        self.__degree_f = degree_f
 
     @classmethod
     def radian(cls, radian_f:float):
@@ -222,9 +222,9 @@ class Angle:
 
     def __repr__(self) -> str:
         if __name__ == '__main__':
-            return "Angle({})".format(self.getDegree())
+            return f"Angle({self.getDegree()})"
         else:
-            return "{}.Angle({})".format(__name__, self.getDegree())
+            return f"{__name__}.Angle({self.getDegree()})"
 
     #### Only these uses attributes ####
 

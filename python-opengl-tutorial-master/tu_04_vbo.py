@@ -30,19 +30,19 @@ class Tu01Win(GlutWindow):
         self.context.MVP_ID   = glGetUniformLocation(shader.program,"MVP")
         self.context.Texture_ID =  glGetUniformLocation(shader.program, "myTextureSampler")
 
-        
+
         #texture = textureLoader("resources/tu03/uvmap.dds")
         #model = objLoader("resources/tu03/cube.obj").to_single_index_style()
 
-        texture = textureLoader("resources/tu04/uvmap.dds")		
+        texture = textureLoader("resources/tu04/uvmap.dds")
         model = objLoader("resources/tu04/suzanne.obj").to_single_index_style()
-        
+
         self.context.texturebuffer = texture.textureGLID
-        if(texture.inversedVCoords):
-            for index in range(0,len(model.texcoords)):
+        if texture.inversedVCoords:
+            for index in range(len(model.texcoords)):
                 if(index % 2):
                     model.texcoords[index] = 1.0 - model.texcoords[index]	
-                    
+
 
         self.context.vertexbuffer  = glGenBuffers(1)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,self.context.vertexbuffer)
@@ -54,7 +54,7 @@ class Tu01Win(GlutWindow):
 
 
         self.context.elementbuffer  = glGenBuffers(1)
-        self.context.elementbufferSize = len(model.indices)		
+        self.context.elementbufferSize = len(model.indices)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,self.context.elementbuffer)
 
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,len(model.indices)*2,(GLushort * len(model.indices))(*model.indices),GL_STATIC_DRAW)

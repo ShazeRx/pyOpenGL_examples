@@ -25,26 +25,23 @@ def utf8(s):
 
 def readfile(fname, win=None):
     if not os.path.exists(fname):
-        msgbox(win, '错误', '没找到文件 %s' % fname)
+        msgbox(win, '错误', f'没找到文件 {fname}')
         return False
-    f = open(fname, 'r')
-    s = f.read()
-    f.close()
+    with open(fname, 'r') as f:
+        s = f.read()
     return s
 
 def readyaml(fname, win=None):
     if not os.path.exists(fname):
-        msgbox(win, '错误', '没找到文件 %s' % fname)
+        msgbox(win, '错误', f'没找到文件 {fname}')
         return False
-    f = open(fname, 'r')
-    s = yaml.load(f)
-    f.close()
+    with open(fname, 'r') as f:
+        s = yaml.load(f)
     return s
 
 def writeyaml(fname, mydict):
-    f = open(fname, 'w')
-    f.write(yaml.dump(mydict))
-    f.close()
+    with open(fname, 'w') as f:
+        f.write(yaml.dump(mydict))
 
 def list_npz_name(ext):
     return [n for n in os.listdir('') if n.endswith(ext)]
@@ -53,8 +50,9 @@ def msgbox(win, title, msg):
     QtGui.QMessageBox.critical(win, utf8(title), utf8(msg))
 
 def import_las(win, ui_files, is_interpre=False):
-    fname = QtWidgets.QFileDialog.getOpenFileName(win, utf8('打开LAS文件'), '', '*.las')
-    if fname:
+    if fname := QtWidgets.QFileDialog.getOpenFileName(
+        win, utf8('打开LAS文件'), '', '*.las'
+    ):
         fname = las2npy_nointerpre(unicode(fname)) if is_interpre else las2npz(unicode(fname))
         if fname.startswith('ERR'):
             msgbox(win, '警告', fname[4:])
@@ -169,7 +167,7 @@ def las2npz(fname):
 
     fname = os.path.split(fname)[-1]
     fname, ext = os.path.splitext(fname)
-    fname = fname + '.npz'
+    fname = f'{fname}.npz'
     np.savez(fname,
         depth=np.array(depth),
         casingdata=casingdata,
@@ -189,7 +187,7 @@ def las2npy_nointerpre(fname):
 
     fname = os.path.split(fname)[-1]
     fname, ext = os.path.splitext(fname)
-    fname = fname + '.2.npz'
+    fname = f'{fname}.2.npz'
     np.savez(fname,
         depth=np.array(depth),
         lashead = lashead,
@@ -204,11 +202,10 @@ def las2npy_nointerpre(fname):
 def npy2las(data, lashead, fname):
     las = StringIO()
     np.savetxt(las, data, '%12.2f')
-    f = open(fname + '.las', 'w')
-    f.write(str(lashead) + '~A\n')
-    f.write(las.getvalue())
-    las.close()
-    f.close()
+    with open(f'{fname}.las', 'w') as f:
+        f.write(str(lashead) + '~A\n')
+        f.write(las.getvalue())
+        las.close()
 
 #test
 #fname=las2npy('t.las')

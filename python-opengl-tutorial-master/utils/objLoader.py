@@ -60,8 +60,9 @@ class objLoader(object):
 
 
     def to_single_index_style(self):
+
         class Container(object):
-            pass                
+            pass
         outobj = Container()
         outobj.vertexs=[]
         outobj.texcoords = []
@@ -70,16 +71,14 @@ class objLoader(object):
         combinations = []
         for i in range(0,len(self.indices),3):
             point = self.indices[i:i+3]
-            if(point in combinations):
-                pass
-            else:
+            if point not in combinations:
                 combinations.append(point)
-                index = 3*(self.indices[i]-1)            
+                index = 3*(self.indices[i]-1)
                 outobj.vertexs.extend(self.vertexs[index:index+3])
                 index = 2*(self.indices[i+1]-1)
                 outobj.texcoords.extend(self.texcoords[index:index+2])
                 index = 3*(self.indices[i+2]-1)
-                outobj.normals.extend(self.normals[index:index+3])                
+                outobj.normals.extend(self.normals[index:index+3])
             newindex = combinations.index(point)
             outobj.indices.append(newindex)
         return outobj

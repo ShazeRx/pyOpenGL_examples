@@ -12,21 +12,19 @@ import os
 class Shader(object):
 
     def initShaderFromGLSL(self, vertex_shader_paths, fragment_shader_paths):
-        vertex_shader_source_list = []
-        fragment_shader_source_list = []
-        if(isinstance(vertex_shader_paths,list)):
+        if (isinstance(vertex_shader_paths,list)):
 
             
+            vertex_shader_source_list = []
             for GLSL in vertex_shader_paths:
                 absDIR =  os.path.abspath(os.path.join(os.path.join(os.path.dirname(__file__),".."),GLSL))
-                f = open(absDIR,'rb')
-                vertex_shader_source_list.append(f.read())
-                f.close()
+                with open(absDIR,'rb') as f:
+                    vertex_shader_source_list.append(f.read())
+            fragment_shader_source_list = []
             for GLSL in fragment_shader_paths:
                 absDIR =  os.path.abspath(os.path.join(os.path.join(os.path.dirname(__file__),".."),GLSL))
-                f = open(absDIR,'rb')
-                fragment_shader_source_list.append(f.read())      
-                f.close()    
+                with open(absDIR,'rb') as f:
+                    fragment_shader_source_list.append(f.read())
             self.initShader(vertex_shader_source_list,fragment_shader_source_list)
 
 

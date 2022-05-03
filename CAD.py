@@ -9,6 +9,7 @@
 CAD轴的图
 '''
 
+
 # 导入pyautocad库
 from pyautocad import Autocad, APoint
 
@@ -36,23 +37,18 @@ p1 = APoint(x1, y1)
 # 按照轴段个数，给代表X轴和Y轴的列表传递值
 num = int(input("轴段个数："))
 for i in range(num):
-    x = int(input("第{}段长度：".format(i+1)))
-    y = int(input("第{}段直径：".format(i+1)))
+    x = int(input(f"第{i + 1}段长度："))
+    y = int(input(f"第{i + 1}段直径："))
     ls.append(x)
     x1 += x
     ls1.append(x1)
     ls2.append(y)
-    Q.append(-y)
-    Q.append(-y)
-
+    Q.extend((-y, -y))
 for j in range(num):
     X.append(ls1[j]-ls[j])
-    Y.append(ls2[j])
-    Y.append(ls2[j])
+    Y.extend((ls2[j], ls2[j]))
 for j in range(num):
-    Z.append(X[j])
-    Z.append(ls1[j])
-
+    Z.extend((X[j], ls1[j]))
 # 绘制上半部分的线段
 for k in range(len(Y)):
     if k != 0:

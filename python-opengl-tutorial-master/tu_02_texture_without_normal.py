@@ -119,8 +119,8 @@ class Tu01Win(GlutWindow):
 		glBindBuffer(GL_ARRAY_BUFFER,self.context.vertexbuffer)
 		glBufferData(GL_ARRAY_BUFFER,len(g_vertex_buffer_data)*4,(GLfloat * len(g_vertex_buffer_data))(*g_vertex_buffer_data),GL_STATIC_DRAW)
 
-		if(texture.inversedVCoords):
-			for index in range(0,len(g_uv_buffer_data)):
+		if texture.inversedVCoords:
+			for index in range(len(g_uv_buffer_data)):
 				if(index % 2):
 					g_uv_buffer_data[index] = 1.0 - g_uv_buffer_data[index]
 

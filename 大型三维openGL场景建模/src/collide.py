@@ -86,10 +86,11 @@ def triangleCheckInner(tri:"Triangle", p:mmath.Vec4, printResult_b:bool=False) -
         print( "\t\t{} = {} - {}".format(c2, vt2, v2) )
         print("\t\tDot result:", dot0, dot1, dot2 )
 
-    if math.copysign(1, dot0) == math.copysign(1, dot1) == math.copysign(1, dot2):
-        return True
-    else:
-        return False
+    return (
+        math.copysign(1, dot0)
+        == math.copysign(1, dot1)
+        == math.copysign(1, dot2)
+    )
 
 
 def hitCheckTriangleSegment(tri:"Triangle", seg:"Segment", printResult_b:bool=False) -> Tuple[int, int, Optional[mmath.Vec4], Optional[float]]:
@@ -97,10 +98,11 @@ def hitCheckTriangleSegment(tri:"Triangle", seg:"Segment", printResult_b:bool=Fa
     if resultCode_i < 0:
         return -1, resultCode_i, None, None
 
-    if not triangleCheckInner(tri, hit_temp, printResult_b):
-        return -2, resultCode_i, hit_temp, insideLen_f
-    else:
-        return 1, resultCode_i, hit_temp, insideLen_f
+    return (
+        (1, resultCode_i, hit_temp, insideLen_f)
+        if triangleCheckInner(tri, hit_temp, printResult_b)
+        else (-2, resultCode_i, hit_temp, insideLen_f)
+    )
 
 
 def hitCheckPlanePlane(pln0:"Plane", pln1:"Plane"):
@@ -281,10 +283,7 @@ def hitCheckAabbSegment(self:"Aabb", seg:"Segment"):
     if t_max > tz_max:
         t_max = tz_max
 
-    if (t_min > 1.0) or (t_max < 0.0):
-        return False
-    else:
-        return True
+    return t_min <= 1.0 and t_max >= 0.0
 
 
 def getDistanceToPushBackAabbAabb(a:"Aabb", b:"Aabb"):
@@ -332,7 +331,7 @@ class Segment:
         self.vecVec4 = mmath.Vec4(xVec, yVec, zVec, 0.0)
 
     def __str__(self):
-        return "<Segment object, pos: {}, vec: {}>".format(self.posVec4.getXYZ(), self.vecVec4.getXYZ())
+        return f"<Segment object, pos: {self.posVec4.getXYZ()}, vec: {self.vecVec4.getXYZ()}>"
 
 
 class Sphere:
@@ -367,10 +366,7 @@ class Plane:
         return self.a*p.x + self.b*p.y + self.c*p.z + self.d
 
     def pointInFront(self, p:VEC34):
-        if self.distance(p) < 0.0:
-            return False
-        else:
-            return True
+        return self.distance(p) >= 0.0
 
 
 class Triangle(Actor):
@@ -387,7 +383,7 @@ class Triangle(Actor):
         self.plane = Plane.from3Dots(p0, p1, p2)
 
     def __str__(self):
-        return "<Triangle object, {}>".format(self.getPoint012())
+        return f"<Triangle object, {self.getPoint012()}>"
 
     def getPoint0(self) -> mmath.Vec4:
         return self.points_l[0] + mmath.Vec4(*self.getWorldXYZ(), 1.0)
@@ -422,7 +418,7 @@ class Aabb:
         self.max = mmath.Vec4(xB, yB, zB, 1)
 
     def __str__(self):
-        return "<AABB object, min: {}, max: {}>".format(self.min.getXYZ(), self.max.getXYZ())
+        return f"<AABB object, min: {self.min.getXYZ()}, max: {self.max.getXYZ()}>"
 
     def getMaxXYZ(self):
         return self.max.getXYZ()

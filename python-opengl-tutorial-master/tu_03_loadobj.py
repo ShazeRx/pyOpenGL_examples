@@ -45,8 +45,8 @@ class Tu01Win(GlutWindow):
 		glBindBuffer(GL_ARRAY_BUFFER,self.context.vertexbuffer)
 		glBufferData(GL_ARRAY_BUFFER,len(model.vertexs)*4,(GLfloat * len(model.vertexs))(*model.vertexs),GL_STATIC_DRAW)
 
-		if(texture.inversedVCoords):
-			for index in range(0,len(model.texcoords)):
+		if texture.inversedVCoords:
+			for index in range(len(model.texcoords)):
 				if(index % 2):
 					model.texcoords[index] = 1.0 - model.texcoords[index]
 

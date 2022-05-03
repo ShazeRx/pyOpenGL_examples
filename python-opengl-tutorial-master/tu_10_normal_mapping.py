@@ -84,7 +84,7 @@ class NormalMapping(meshWithRender):
 
         tangents = []
         bitangents = []
-        for idx in range(0,len(vertex)/9):
+        for idx in range(len(vertex)/9):
             
             offset = idx*9
             v0 = vertex[offset:offset+3]
@@ -106,14 +106,33 @@ class NormalMapping(meshWithRender):
             tangent = (deltaPos1 * deltaUV2.y   - deltaPos2 * deltaUV1.y)*r
             bitangent = (deltaPos2 * deltaUV1.x   - deltaPos1 * deltaUV2.x)*r
 
-            tangents.extend([tangent.x,tangent.y,tangent.z])
-            tangents.extend([tangent.x,tangent.y,tangent.z])
-            tangents.extend([tangent.x,tangent.y,tangent.z])
-            
-            bitangents.extend([bitangent.x,bitangent.y,bitangent.z])
-            bitangents.extend([bitangent.x,bitangent.y,bitangent.z])
-            bitangents.extend([bitangent.x,bitangent.y,bitangent.z])
-        
+            tangents.extend(
+                [
+                    tangent.x,
+                    tangent.y,
+                    tangent.z,
+                    tangent.x,
+                    tangent.y,
+                    tangent.z,
+                    tangent.x,
+                    tangent.y,
+                    tangent.z,
+                ]
+            )
+
+            bitangents.extend(
+                [
+                    bitangent.x,
+                    bitangent.y,
+                    bitangent.z,
+                    bitangent.x,
+                    bitangent.y,
+                    bitangent.z,
+                    bitangent.x,
+                    bitangent.y,
+                    bitangent.z,
+                ]
+            )
 
         return tangents,bitangents
     def loadShader(self):
@@ -164,24 +183,24 @@ class NormalMapping(meshWithRender):
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,len(model.indices)*2,(GLushort * len(model.indices))(*model.indices),GL_STATIC_DRAW)
 
     def loadTexture(self):
-            from utils.textureLoader import textureLoader
-            DiffuseTexture = textureLoader(self.textureName[0])
-            NormalTexture =  textureLoader(self.textureName[1])
-            SpecularTexture =  textureLoader(self.textureName[2])
+        from utils.textureLoader import textureLoader
+        DiffuseTexture = textureLoader(self.textureName[0])
+        NormalTexture =  textureLoader(self.textureName[1])
+        SpecularTexture =  textureLoader(self.textureName[2])
 
-            model = self.model
+        model = self.model
             # if(DiffuseTexture.inversedVCoords):
-            for index in range(0,len(model.texcoords)):
-                if(index % 2):
-                    model.texcoords[index] = 1.0 - model.texcoords[index]
+        for index in range(len(model.texcoords)):
+            if(index % 2):
+                model.texcoords[index] = 1.0 - model.texcoords[index]
 
-            self.DiffuseTexture = DiffuseTexture.textureGLID
-            self.NormalTexture = NormalTexture.textureGLID
-            self.SpecularTexture = SpecularTexture.textureGLID
+        self.DiffuseTexture = DiffuseTexture.textureGLID
+        self.NormalTexture = NormalTexture.textureGLID
+        self.SpecularTexture = SpecularTexture.textureGLID
 
-            self.uvbuffer  = glGenBuffers(1)
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,self.uvbuffer)            
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER,len(model.texcoords)*4,(GLfloat * len(model.texcoords))(*model.texcoords),GL_STATIC_DRAW)
+        self.uvbuffer  = glGenBuffers(1)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,self.uvbuffer)
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,len(model.texcoords)*4,(GLfloat * len(model.texcoords))(*model.texcoords),GL_STATIC_DRAW)
     def rendering(self, MVP,View,Projection):
         self.shader.begin()
         ModelMatrix = glm.mat4(1.0)
