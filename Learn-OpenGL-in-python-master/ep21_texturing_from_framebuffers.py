@@ -21,22 +21,26 @@ def key_input_clb(window, key, scancode, action, mode):
     if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
         glfw.set_window_should_close(window, True)
 
-    if key == glfw.KEY_W and action == glfw.PRESS:
-        forward = True
-    elif key == glfw.KEY_W and action == glfw.RELEASE:
-        forward = False
-    if key == glfw.KEY_S and action == glfw.PRESS:
-        backward = True
-    elif key == glfw.KEY_S and action == glfw.RELEASE:
-        backward = False
-    if key == glfw.KEY_A and action == glfw.PRESS:
-        left = True
-    elif key == glfw.KEY_A and action == glfw.RELEASE:
-        left = False
-    if key == glfw.KEY_D and action == glfw.PRESS:
-        right = True
-    elif key == glfw.KEY_D and action == glfw.RELEASE:
-        right = False
+    if key == glfw.KEY_W:
+        if action == glfw.PRESS:
+            forward = True
+        elif action == glfw.RELEASE:
+            forward = False
+    if key == glfw.KEY_S:
+        if action == glfw.PRESS:
+            backward = True
+        elif action == glfw.RELEASE:
+            backward = False
+    if key == glfw.KEY_A:
+        if action == glfw.PRESS:
+            left = True
+        elif action == glfw.RELEASE:
+            left = False
+    if key == glfw.KEY_D:
+        if action == glfw.PRESS:
+            right = True
+        elif action == glfw.RELEASE:
+            right = False
 
 
 # do the movement, call this function in the main loop

@@ -94,4 +94,3 @@ class meshWithRender(object):
     
     def rendering(self,MVPptr,ViewPtr,ProjectionPtr):
         print("override rendering process")
-        pass

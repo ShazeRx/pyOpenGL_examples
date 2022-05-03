@@ -114,7 +114,7 @@ class Casing3D(QtWidgets.QWidget):
     def on_savebmp_click(self):
         pixmap = self.glWidget.grabFrameBuffer()
         files = self.ui.files
-        fname = files.item(files.currentRow()).text() + '.jpg'
+        fname = f'{files.item(files.currentRow()).text()}.jpg'
         if not pixmap.save(fname, 'JPG'):
             print('jpg not save')
 
@@ -178,8 +178,7 @@ class GLWidget(QtOpenGL.QGLWidget):
 
         idxs = []
         for i in range(DISP_LEN-1):
-            for j in range(W_INTERP):
-                idxs.append((i*W_INTERP+j, i*W_INTERP+j+W_INTERP))
+            idxs.extend((i*W_INTERP+j, i*W_INTERP+j+W_INTERP) for j in range(W_INTERP))
             idxs.append((i*W_INTERP, i*W_INTERP+W_INTERP))
 
         self.idxs = np.array(idxs).reshape(2*(W_INTERP+1)*(DISP_LEN-1)) #glDrawElements(vector indices)
@@ -361,14 +360,13 @@ class GLWidget(QtOpenGL.QGLWidget):
 
     def _depth(self, idx=None):
         start, stop, step = self.parent.depth
-        if idx == None:
+        if idx is None:
             idx = self.data_idx
-        dep = start + idx * step
-        return dep
+        return start + idx * step
 
     def _maxminave(self, datatype, idx=None):
         data = self.data[datatype]
-        if idx == None:
+        if idx is None:
             idx = self.data_idx
         if data.shape[0] > 0:
             d = data[idx]
@@ -416,10 +414,10 @@ class GLWidget(QtOpenGL.QGLWidget):
             self._draw_string_list([(i%3 * 100, h - (i/3)*10-10, None, s) for i, s in enumerate(infos)])
 
     def draw_color_map(self, w, h):
+        diff = ('50','40','30','20','10','0','-10','-20','-30','-40','-50')
         for i in self.tools:
             color, x, title = self.color[i], (80, 30)[i], ('MFC', 'MTD')[i]
             strlist = [(w-x+5, 150+20, None, title)]
-            diff = ('50','40','30','20','10','0','-10','-20','-30','-40','-50')
             glBegin(GL_QUAD_STRIP)
             for i,(r,g,b) in enumerate(color):
                 y = 150 - i * 12

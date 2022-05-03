@@ -47,19 +47,19 @@ class basicShading(meshWithRender):
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,len(model.indices)*2,(GLushort * len(model.indices))(*model.indices),GL_STATIC_DRAW)
 
     def loadTexture(self):
-            from utils.textureLoader import textureLoader
-            texture = textureLoader(self.textureName)	
-            model = self.model
-            if(texture.inversedVCoords):
-                for index in range(0,len(model.texcoords)):
-                    if(index % 2):
-                        model.texcoords[index] = 1.0 - model.texcoords[index]
+        from utils.textureLoader import textureLoader
+        texture = textureLoader(self.textureName)
+        model = self.model
+        if texture.inversedVCoords:
+            for index in range(len(model.texcoords)):
+                if(index % 2):
+                    model.texcoords[index] = 1.0 - model.texcoords[index]
 
-            self.texturebuffer = texture.textureGLID
+        self.texturebuffer = texture.textureGLID
 
-            self.uvbuffer  = glGenBuffers(1)
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,self.uvbuffer)            
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER,len(model.texcoords)*4,(GLfloat * len(model.texcoords))(*model.texcoords),GL_STATIC_DRAW)
+        self.uvbuffer  = glGenBuffers(1)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,self.uvbuffer)
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,len(model.texcoords)*4,(GLfloat * len(model.texcoords))(*model.texcoords),GL_STATIC_DRAW)
 
     def rendering(self, MVP,View,Projection):
         self.shader.begin()

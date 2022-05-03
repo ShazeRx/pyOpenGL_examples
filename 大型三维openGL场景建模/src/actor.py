@@ -28,15 +28,8 @@ class Actor:
 
         self.physics = False
 
-        if initPos_t is None:
-            self.pos_l = [0.0, 0.0, 0.0]
-        else:
-            self.pos_l = list(initPos_t)
-        if initScale is None:
-            self.scale_l = [1, 1, 1]
-        else:
-            self.scale_l = list(initScale)
-
+        self.pos_l = [0.0, 0.0, 0.0] if initPos_t is None else list(initPos_t)
+        self.scale_l = [1, 1, 1] if initScale is None else list(initScale)
         self.lookVerDeg_f = 0.0
         self.lookHorDeg_f = 0.0
 
@@ -219,9 +212,7 @@ class Actor:
 
     def _applyGravity(self, timeDelta:float):
         distance = timeDelta * 10
-        if distance > 0.5:
-            distance = 0.5
-
+        distance = min(distance, 0.5)
         self.pos_l[1] -= distance
 
     def _validateValues(self) -> None:

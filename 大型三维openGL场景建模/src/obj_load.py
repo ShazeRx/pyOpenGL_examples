@@ -83,14 +83,12 @@ class LoadedModelManager:
     def _getProgram() -> int:
         with open("shader_source/2nd_vs_loaded.glsl") as file:
             vertexShader = shaders.compileShader(file.read(), gl.GL_VERTEX_SHADER)
-        log_s = glf.get_shader_log(vertexShader)
-        if log_s:
+        if log_s := glf.get_shader_log(vertexShader):
             raise TypeError(log_s)
 
         with open("shader_source/2nd_fs_loaded.glsl") as file:
             fragmentShader = shaders.compileShader(file.read(), gl.GL_FRAGMENT_SHADER)
-        log_s = glf.get_shader_log(fragmentShader)
-        if log_s:
+        if log_s := glf.get_shader_log(fragmentShader):
             raise TypeError(log_s)
 
         program = gl.glCreateProgram()
@@ -244,27 +242,25 @@ class LoadedModel(Actor):
                         try:
                             vertices_d[curObj_s]["v_i" ].append( vertices_d[curObj_s]["v" ][v_l[0] - 1] )
                         except IndexError:
-                            print( "{}: {}, {} << {}".format( curObj_s, v_l[0] - 1, len(vertices_d[curObj_s]["v" ]), x_s ) )
+                            print(f'{curObj_s}: {v_l[0] - 1}, {len(vertices_d[curObj_s]["v" ])} << {x_s}')
                         try:
                             vertices_d[curObj_s]["vt_i"].append(vertices_d[curObj_s]["vt"][v_l[1] - 1])
                         except IndexError:
-                            print( "{}: {}, {} << {}".format( curObj_s, v_l[1] - 1, len(vertices_d[curObj_s]["vt" ]), x_s ) )
+                            print(f'{curObj_s}: {v_l[1] - 1}, {len(vertices_d[curObj_s]["vt" ])} << {x_s}')
                         try:
                             vertices_d[curObj_s]["vn_i"].append(vertices_d[curObj_s]["vn"][v_l[2] - 1])
                         except IndexError:
-                            print( "{}: {}, {} << {}".format( curObj_s, v_l[2] - 1, len(vertices_d[curObj_s]["vn" ]), x_s ) )
+                            print(f'{curObj_s}: {v_l[2] - 1}, {len(vertices_d[curObj_s]["vn" ])} << {x_s}')
 
         del vertices_d[curObj_s]["v"], vertices_d[curObj_s]["vt"], vertices_d[curObj_s]["vn"]
 
-        for x in vertices_d:
-            aa = vertices_d[x]
+        for x, aa in vertices_d.items():
             assert len(aa["vt_i"]) == len(aa["vn_i"]) == len(aa["v_i"])
             del x, aa
 
         self.vertices_d = {}
-        for objName_s in vertices_d.keys():
+        for objName_s, localObj_d in vertices_d.items():
             self.vertices_d[objName_s] = {}
-            localObj_d = vertices_d[objName_s]  # Dictionary that contains vertex data atm. Local variable.
             attrObj_d = self.vertices_d[objName_s]  # Class attribute to store vertex data.
 
             attrObj_d["vao"] = gl.glGenVertexArrays(1)

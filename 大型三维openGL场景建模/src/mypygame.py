@@ -18,22 +18,18 @@ class FrameManager:
         return self.__frameCount_i
 
     def getFrameDelta(self):
-        if self.__frameDelta_f > 100.0:
-            return 0.0
-        else:
-            return self.__frameDelta_f
+        return 0.0 if self.__frameDelta_f > 100.0 else self.__frameDelta_f
 
     def getFPS(self):
-        if self.__isFreshFps:
-            self.__isFreshFps = False
-            return self.__lastFPS_i, True
-        else:
+        if not self.__isFreshFps:
             return self.__lastFPS_i, False
+        self.__isFreshFps = False
+        return self.__lastFPS_i, True
 
     #### setter ####
 
     def setPrintFPS(self, opt:bool):
-        self.__flagPrintFPS = bool(opt)
+        self.__flagPrintFPS = opt
 
     ####  ####
 

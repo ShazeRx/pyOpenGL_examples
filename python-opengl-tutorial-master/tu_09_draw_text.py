@@ -33,9 +33,8 @@ class Draw2DText(meshWithRender):
 
         vertex_array = []
         uv_array = []
-        lineCount =0
-        for line in self.text_str:            
-            for idx in range(0,len(line)):
+        for lineCount, line in enumerate(self.text_str):        
+            for idx in range(len(line)):
                 xoffset = idx*self.Xsize
                 yoffset = lineCount*self.Ysize
                 vertex_up_left =    [self.x+xoffset          ,self.y+yoffset+self.Ysize]
@@ -44,7 +43,7 @@ class Draw2DText(meshWithRender):
                 vertex_down_left =  [self.x+xoffset          ,self.y+yoffset]
                 vertex_array = vertex_array + vertex_up_left+vertex_down_left+vertex_up_right
                 vertex_array = vertex_array + vertex_down_right+vertex_up_right+vertex_down_left
-                
+
                 character =  ord(line[idx])
                 uv_x = (character%16)/16.0
                 uv_y = (character/16)/16.0
@@ -55,15 +54,14 @@ class Draw2DText(meshWithRender):
                 uv_down_left   =  [uv_x,uv_y+1.0/16.0]
                 uv_array = uv_array + uv_up_left+uv_down_left+uv_up_right
                 uv_array = uv_array + uv_down_right+uv_up_right+uv_down_left
-            lineCount+=1
         self.vertexbuffer  = glGenBuffers(1)
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,self.vertexbuffer)        
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,self.vertexbuffer)
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,len(vertex_array)*4,(GLfloat * len(vertex_array))(*vertex_array),GL_STATIC_DRAW)
- 
+
         self.uvbuffer  = glGenBuffers(1)
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,self.uvbuffer)    
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,self.uvbuffer)
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,len(uv_array)*4,(GLfloat * len(uv_array))(*uv_array),GL_STATIC_DRAW)
- 
+
         self.vertex_array = vertex_array
     def loadTexture(self):
             from utils.textureLoader import textureLoader

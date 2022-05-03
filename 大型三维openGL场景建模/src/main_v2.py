@@ -54,10 +54,7 @@ class Controller:
         self.newMouseState_t = p.mouse.get_pressed()
 
         if self.getStateChange(pl.K_f) == 1:
-            if self.mainLoop.flashLight_b:
-                self.mainLoop.flashLight_b = False
-            else:
-                self.mainLoop.flashLight_b = True
+            self.mainLoop.flashLight_b = not self.mainLoop.flashLight_b
         if self.getStateChange(pl.K_ESCAPE) == 1:
             p.quit()
             sys.exit(0)
@@ -112,8 +109,6 @@ class Controller:
             self.target.rotateMouse(-xMouse_i, -yMouse_i)
 
     def getStateChangesGen(self) -> Generator[Tuple[int, int], None, None]:
-        assert len(self.oldState_t) == len(self.oldState_t)
-
         for x in range(len(self.oldState_t)):
             if self.oldState_t[x] != self.newState_t[x]:
                 yield x, self.newState_t[x]
@@ -139,7 +134,7 @@ class PointLight:
     def __init__(self, position_t:Tuple[float, float, float], lightColor_t:Tuple[float, float, float], maxDistance_f:float=5):
         self.x, self.y, self.z = tuple(map(lambda xx: float(xx), position_t))
         self.r, self.g, self.b = tuple(map(lambda xx: float(xx), lightColor_t))
-        self.maxDistance_f = float(maxDistance_f)
+        self.maxDistance_f = maxDistance_f
 
     def getXYZ(self):
         return self.x, self.y, self.z
@@ -160,8 +155,8 @@ class SpotLight(Actor):
         self.pos_l = list(map(lambda xx:float(xx), position_t))
         self.lookHorDeg_f = 90.0
         self.r, self.g, self.b = tuple(map(lambda xx:float(xx), lightColor_t))
-        self.maxDistance_f = float(maxDistance_f)
-        self.cutoff_f = float(cutoff)
+        self.maxDistance_f = maxDistance_f
+        self.cutoff_f = cutoff
         self.directionVec3 = directionVec3
         self.directionVec3.normalize()
 
@@ -216,19 +211,10 @@ class TextureContainer:
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_BASE_LEVEL, 0)
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAX_LEVEL, 6)
 
-        if alpha_b and False:
-            gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_EDGE)
-            gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_EDGE)
-
         gl.glGenerateMipmap(gl.GL_TEXTURE_2D)
 
-        if 1:
-            gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR_MIPMAP_LINEAR)
-            gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
-        else:
-            gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST_MIPMAP_NEAREST)
-            gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
-
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR_MIPMAP_LINEAR)
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
         print("\t\trest:", time() - st2)
 
         return texId
@@ -328,14 +314,12 @@ class StaticSurface:
     def getProgram() -> int:
         with open("shader_source/2nd_vs.glsl") as file:
             vertexShader = shaders.compileShader(file.read(), gl.GL_VERTEX_SHADER)
-        log = glf.get_shader_log(vertexShader)
-        if log:
+        if log := glf.get_shader_log(vertexShader):
             raise TypeError(log)
 
         with open("shader_source/2nd_fs.glsl") as file:
             fragmentShader = shaders.compileShader(file.read(), gl.GL_FRAGMENT_SHADER)
-        log = glf.get_shader_log(fragmentShader)
-        if log:
+        if log := glf.get_shader_log(fragmentShader):
             raise TypeError(log)
 
         program = gl.glCreateProgram()
@@ -364,10 +348,10 @@ class Box(Actor):
 
         self.vertices_l = [vec1, vec2, vec3, vec4, vec5, vec6, vec7, vec8]
         self.textureId = textureId
-        self.textureVerNum_f = float(textureVerNum_f)
-        self.textureHorNum_f = float(textureHorNum_f)
-        self.shininess_f = float(shininess)
-        self.specularStrength_f = float(specularStrength)
+        self.textureVerNum_f = textureVerNum_f
+        self.textureHorNum_f = textureHorNum_f
+        self.shininess_f = shininess
+        self.specularStrength_f = specularStrength
 
         self.pos_l = startPos_l
 
@@ -510,16 +494,15 @@ class Box(Actor):
 
     def drawForShadow(self, timeDelta):
         self.updateActor(timeDelta)
-        if True or self.renderFlag:
-            gl.glBindVertexArray(self.vao)
+        gl.glBindVertexArray(self.vao)
 
-            #### To vertex shader ####
+        #### To vertex shader ####
 
-            gl.glUniformMatrix4fv(3, 1, gl.GL_FALSE, self.getModelMatrix())
+        gl.glUniformMatrix4fv(3, 1, gl.GL_FALSE, self.getModelMatrix())
 
-            ####  ####
+        ####  ####
 
-            gl.glDrawArrays(gl.GL_TRIANGLES, 0, self.vertexSize_i)
+        gl.glDrawArrays(gl.GL_TRIANGLES, 0, self.vertexSize_i)
 
     def _checkCollide(self):
         self.selectedTexId = self.textureId
@@ -531,8 +514,6 @@ class Box(Actor):
     def collideAction(self, moveToOut_t:tuple):
         if self.textureId2 is not None:
             self.selectedTexId = self.textureId2
-            pass
-
         x, y, z = moveToOut_t
         if abs(x) < abs(y) and abs(x) < abs(z):
             self.pos_l[0] += x
@@ -624,14 +605,12 @@ class BoxManager:
     def _getProgram() -> int:
         with open("shader_source/2nd_vs_box.glsl") as file:
             vertexShader = shaders.compileShader(file.read(), gl.GL_VERTEX_SHADER)
-        log = glf.get_shader_log(vertexShader)
-        if log:
+        if log := glf.get_shader_log(vertexShader):
             raise TypeError(log)
 
         with open("shader_source/2nd_fs_box.glsl") as file:
             fragmentShader = shaders.compileShader(file.read(), gl.GL_FRAGMENT_SHADER)
-        log = glf.get_shader_log(fragmentShader)
-        if log:
+        if log := glf.get_shader_log(fragmentShader):
             raise TypeError(log)
 
         program = gl.glCreateProgram()
@@ -782,20 +761,15 @@ class Level:
 
     def update(self, timeDelta, projectMatrix, viewMatrix, camera:Camera, flashLight, shadowMat, sunLightDirection):
         a = sunLightDirection.dot(mmath.Vec4(0, -1, -1, 0)) + 0.5
-        if a < 0.0:
-            a = 0.0
+        a = max(a, 0.0)
         a = a*2
         if a< 0.2:
             a = 0.2
         elif a > 1.0:
             a = 1.0
 
-        if False and 0.0 < a < 0.9:
-            self.sunLightColor = (0.7, 0.3, 0.3)
-            gl.glClearBufferfv(gl.GL_COLOR, 0, (a, a / 2, a/2, 1.0))
-        else:
-            self.sunLightColor = (0.5, 0.5, 0.5)
-            gl.glClearBufferfv(gl.GL_COLOR, 0, ( a / 2 , a / 2 , a, 1.0))
+        self.sunLightColor = (0.5, 0.5, 0.5)
+        gl.glClearBufferfv(gl.GL_COLOR, 0, ( a / 2 , a / 2 , a, 1.0))
 
         self.ambient_t = (0.25, 0.25, 0.25)
 
@@ -828,7 +802,7 @@ class Level:
             lightMaxDistance_t += (x.maxDistance_f,)
             lightCount_i += 1
 
-        spotLightPos_t = list()
+        spotLightPos_t = []
         spotLightColor_t = tuple()
         spotLightMaxDistance_t = tuple()
         spotLightDirection_t = tuple()
@@ -1045,14 +1019,12 @@ class StaticSurfaceShadow:
     def getProgram() -> int:
         with open("shader_source/vs_shadow_draw.glsl") as file:
             vertexShader = shaders.compileShader(file.read(), gl.GL_VERTEX_SHADER)
-        log = glf.get_shader_log(vertexShader)
-        if log:
+        if log := glf.get_shader_log(vertexShader):
             raise TypeError(log)
 
         with open("shader_source/fs_shadow_draw.glsl") as file:
             fragmentShader = shaders.compileShader(file.read(), gl.GL_FRAGMENT_SHADER)
-        log = glf.get_shader_log(fragmentShader)
-        if log:
+        if log := glf.get_shader_log(fragmentShader):
             raise TypeError(log)
 
         program = gl.glCreateProgram()
@@ -1117,14 +1089,12 @@ class ShadowMap:
     def _getProgram() -> int:
         with open("shader_source/vs_shadow.glsl") as file:
             vertexShader = shaders.compileShader(file.read(), gl.GL_VERTEX_SHADER)
-        log = glf.get_shader_log(vertexShader)
-        if log:
+        if log := glf.get_shader_log(vertexShader):
             raise TypeError(log)
 
         with open("shader_source/fs_shadow.glsl") as file:
             fragmentShader = shaders.compileShader(file.read(), gl.GL_FRAGMENT_SHADER)
-        log = glf.get_shader_log(fragmentShader)
-        if log:
+        if log := glf.get_shader_log(fragmentShader):
             raise TypeError(log)
 
         program = gl.glCreateProgram()
@@ -1190,7 +1160,6 @@ class MainLoop:
         gl.glEnable(gl.GL_DEPTH_TEST)
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-        pass
 
     def update(self):
         self.fManager.update()
@@ -1227,10 +1196,9 @@ class MainLoop:
         self.onResize()
         self.level.update(self.fManager.getFrameDelta(), self.projectMatrix, viewMatrix, self.camera, self.flashLight_b, lightView * lightProjection, sunLightDirection)
 
-        if True:
-            self.drawText((-0.95, 0.9, 0), "FPS : {}".format(self.fManager.getFPS()[0]))
-            self.drawText((-0.95, 0.8, 0), "Pos : {:.2f}, {:.2f}, {:.2f}".format(*self.camera.pos_l))
-            self.drawText((-0.95, 0.7, 0), "Looking : {:.2f}, {:.2f}".format(self.camera.lookHorDeg_f, self.camera.lookVerDeg_f))
+        self.drawText((-0.95, 0.9, 0), "FPS : {}".format(self.fManager.getFPS()[0]))
+        self.drawText((-0.95, 0.8, 0), "Pos : {:.2f}, {:.2f}, {:.2f}".format(*self.camera.pos_l))
+        self.drawText((-0.95, 0.7, 0), "Looking : {:.2f}, {:.2f}".format(self.camera.lookHorDeg_f, self.camera.lookVerDeg_f))
 
         p.display.flip()
 
@@ -1257,13 +1225,6 @@ def main():
             mainLoop.update()
     except SystemExit:  # When the app is closed my clicking close button.
         pass
-    except:  # I want to see what exception crashed my god damn app.
-        p.quit()
-        print('SERIOUS ERROR OCCURRED!!')
-        traceback.print_exc()
-        sleep(1)
-        input("Press any key to continue...")
-        sys.exit(-1)
 
 
 if __name__ == '__main__':
